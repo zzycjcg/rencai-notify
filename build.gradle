@@ -1,0 +1,68 @@
+group 'com.github.zzycjcg'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+test {
+    ignoreFailures = true
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+    all*.exclude group: 'log4j', module: 'log4j'//全局排除log4j
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "http://nexus.dui88.com:8081/nexus/content/groups/public/" }
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "https://plugins.gradle.org/m2/" } //sonarqube
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.8.RELEASE")
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:1.2' //sonarqube
+    }
+}
+
+jar {
+    baseName = 'rencai-notifier'
+    version = '1.0'
+    manifest { attributes 'Main-Class': 'com.github.zzycjcg.notifier.Application' }
+}
+
+bootRepackage {
+    mainClass = 'com.github.zzycjcg.notifier.Application'
+}
+
+repositories {
+    mavenLocal()
+    maven { url "http://nexus.dui88.com:8081/nexus/content/groups/public/" }
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    mavenCentral()
+}
+
+dependencyManagement {
+    dependencies {
+        imports {
+            mavenBom 'org.springframework.boot:spring-boot-dependencies:1.3.8.RELEASE'
+        }
+    }
+}
+
+dependencies {
+    //系统服务
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile('com.alibaba:fastjson:latest.integration')
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    compile group: 'org.apache.commons', name: 'commons-email', version: '1.4'
+    compile 'org.jsoup:jsoup:1.10.2'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+}
